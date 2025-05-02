@@ -1,5 +1,7 @@
 import pygame
 import sys
+from pygame import mixer #sound import 
+
 
 pygame.init()
 
@@ -40,11 +42,11 @@ class DraggableImage(pygame.sprite.Sprite):
                 self.rect.y = mouse_y + self.offset_y
 
 # images 
-image_files = ["brian bell.jpeg", "matt sharp.png", "pat wilson.jpeg", "rivers cuomo.jpeg"]
-positions = [(50, 50), (100, 50), (150, 50), (200, 50)]
+image_files = ["brian bell.jpeg", "pedo.png", "pat wilson.jpeg", "rivers cuomo.jpeg"]
+positions = [(700, 50), (500, 50), (100, 50), (300, 50)]
 
 brian_bell = pygame.image.load("brian bell.jpeg") 
-matt_sharp = pygame.image.load("matt sharp.png") 
+matt_sharp = pygame.image.load("pedo.png") 
 pat_wilson = pygame.image.load("pat wilson.jpeg") 
 rivers_cuomo = pygame.image.load("rivers cuomo.jpeg") 
 
@@ -52,19 +54,19 @@ rivers_cuomo = pygame.image.load("rivers cuomo.jpeg")
 
 # if position of the sprite is at a specific spot, trigger weezer 
 
-brian_bell = (100, 500)
-matt_sharp = (300, 500) 
-pat_wilson = (500, 500)
-rivers_cuomo = (700, 500)
+brian_bell = (700, 500) #4th pos
+matt_sharp = (500, 500) #3rd
+pat_wilson = (100, 500) #1st 
+rivers_cuomo = (300, 500) #2nd 
 
-target_positions = [(100, 500), (300, 500), (500, 500), (700, 500)]
+target_positions = [(700, 500), (500, 500), (100, 500), (300, 500)]
 
 # Create sprite group
 pieces = [DraggableImage(img, pos) for img, pos in zip(image_files, positions)]
 all_sprites = pygame.sprite.Group(pieces)
 
 # Define positions for the 4 dots
-dot_positions = [(100, 500), (300, 500), (500, 500), (700, 500)]  # Example positions
+dot_positions = [(700, 500), (500, 500), (100, 500), (300, 500)]  # Example positions
 dot_radius = 5
 dot_color = (255, 0, 0)  # Red color
 
@@ -86,10 +88,48 @@ while running:
 
     # Check if all sprites are colliding with their respective dots
     rules = [is_colliding(current, target) for current, target in zip(current_positions, target_positions)]
-    print("Rules:", rules)  # Debugging: Print rules
+    # print("Rules:", rules)  # Debugging: Print rules(should delete, wrong position for the true and false but im a developer so i can do whatever i want 
 
     if all(rules):
         print("omg its weezer!")
+        mixer.music.load("weezer-riff.mp3")  # Load the sound file
+        mixer.music.set_volume(0.7)         # Main loop
+        running = True
+        all_collided = False  # Flag to ensure the event triggers only once
+        
+        while running:
+            screen.fill((24, 155, 204))  # Fill background
+        
+            # Draw 4 dots
+            for pos in dot_positions:
+                pygame.draw.circle(screen, dot_color, pos, dot_radius)
+        
+            # Update current positions of sprites
+            current_positions = [piece.rect.center for piece in pieces]  # Use center for better collision detection
+        
+            # Check if all sprites are colliding with their respective dots
+            rules = [is_colliding(current, target) for current, target in zip(current_positions, target_positions)]
+        
+            if all(rules) and not all_collided:  # Trigger only once when all collide
+                print("omg its weezer!")
+                mixer.music.load("weezer-riff.mp3")  # Load the sound file
+                mixer.music.set_volume(0.7)
+                mixer.music.play()  # Play sound when all pieces are in place
+                all_collided = True  # Set the flag to prevent retriggering
+        
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                for piece in pieces:
+                    piece.handle_event(event)
+        
+            all_sprites.draw(screen)
+            pygame.display.flip()
+            clock.tick(60)  # 60 FPS setting
+        
+        pygame.quit()
+        sys.exit()
+        mixer.music.play()  # Play sound when all pieces are in place
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
