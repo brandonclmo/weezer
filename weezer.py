@@ -41,7 +41,34 @@ class DraggableImage(pygame.sprite.Sprite):
 
 # images 
 image_files = ["brian bell.jpeg", "matt sharp.png", "pat wilson.jpeg", "rivers cuomo.jpeg"]
-positions = [(50, 50), (200, 50), (50, 200), (200, 200)]
+positions = [(50, 50), (100, 50), (150, 50), (200, 50)]
+
+brian_bell = pygame.image.load("brian bell.jpeg") 
+matt_sharp = pygame.image.load("matt sharp.png") 
+pat_wilson = pygame.image.load("pat wilson.jpeg") 
+rivers_cuomo = pygame.image.load("rivers cuomo.jpeg") 
+
+#dot so i can position the sprites correctly
+x = 400
+y = 300
+dot_radius = 5 
+pygame.draw.circle(screen, (255, 0, 0), (x, y), dot_radius)
+pygame.display.flip()
+
+# if position of the sprite is at a specific spot, trigger weezer 
+
+brian_bell = (50, 500)
+matt_sharp = (200, 500) 
+pat_wilson = (50, 500)
+rivers_cuomo = (200, 500)
+
+target_positions = [(50, 50), (100, 50), (150, 50), (200, 50)]
+current_positions = [brian_bell, matt_sharp, pat_wilson, rivers_cuomo]
+
+rules = [current == target for current, target in zip(current_positions, target_positions)]
+
+if all(rules):
+    print("omg its weezer!")
 
 # Create sprite group
 pieces = [DraggableImage(img, pos) for img, pos in zip(image_files, positions)]
@@ -50,7 +77,8 @@ all_sprites = pygame.sprite.Group(pieces)
 # Main loop
 running = True
 while running:
-    screen.fill((24, 155, 204)) # for the weezer blue 
+    screen.fill((24, 155, 204))  # Fill background
+    pygame.draw.circle(screen, (255, 0, 0), (x, y), dot_radius)  # Dot for positioning 
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
