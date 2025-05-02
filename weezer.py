@@ -8,7 +8,7 @@ WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("weezer")
 clock = pygame.time.Clock()
-pygame.draw.line(screen, (0, 0, 0), (0, 0), (100, 100))
+pygame.draw.line(screen, (0, 0, 0), (0, 0), (100, 100)) #wher is my line might fix later
 
 # class of draggable images/ sprites 
 class DraggableImage(pygame.sprite.Sprite):
@@ -48,37 +48,48 @@ matt_sharp = pygame.image.load("matt sharp.png")
 pat_wilson = pygame.image.load("pat wilson.jpeg") 
 rivers_cuomo = pygame.image.load("rivers cuomo.jpeg") 
 
-#dot so i can position the sprites correctly
-x = 400
-y = 300
-dot_radius = 5 
-pygame.draw.circle(screen, (255, 0, 0), (x, y), dot_radius)
-pygame.display.flip()
+
 
 # if position of the sprite is at a specific spot, trigger weezer 
 
-brian_bell = (50, 500)
-matt_sharp = (200, 500) 
-pat_wilson = (50, 500)
-rivers_cuomo = (200, 500)
+brian_bell = (100, 500)
+matt_sharp = (300, 500) 
+pat_wilson = (500, 500)
+rivers_cuomo = (700, 500)
 
-target_positions = [(50, 50), (100, 50), (150, 50), (200, 50)]
-current_positions = [brian_bell, matt_sharp, pat_wilson, rivers_cuomo]
-
-rules = [current == target for current, target in zip(current_positions, target_positions)]
-
-if all(rules):
-    print("omg its weezer!")
+target_positions = [(100, 500), (300, 500), (500, 500), (700, 500)]
 
 # Create sprite group
 pieces = [DraggableImage(img, pos) for img, pos in zip(image_files, positions)]
 all_sprites = pygame.sprite.Group(pieces)
 
+# Define positions for the 4 dots
+dot_positions = [(100, 500), (300, 500), (500, 500), (700, 500)]  # Example positions
+dot_radius = 5
+dot_color = (255, 0, 0)  # Red color
+
+# Define a function to check collision with tolerance
+def is_colliding(sprite_pos, dot_pos, tolerance=10):
+    return abs(sprite_pos[0] - dot_pos[0]) <= tolerance and abs(sprite_pos[1] - dot_pos[1]) <= tolerance
+
 # Main loop
 running = True
 while running:
     screen.fill((24, 155, 204))  # Fill background
-    pygame.draw.circle(screen, (255, 0, 0), (x, y), dot_radius)  # Dot for positioning 
+
+    # Draw 4 dots
+    for pos in dot_positions:
+        pygame.draw.circle(screen, dot_color, pos, dot_radius)
+
+    # Update current positions of sprites
+    current_positions = [piece.rect.center for piece in pieces]  # Use center for better collision detection
+
+    # Check if all sprites are colliding with their respective dots
+    rules = [is_colliding(current, target) for current, target in zip(current_positions, target_positions)]
+    print("Rules:", rules)  # Debugging: Print rules
+
+    if all(rules):
+        print("omg its weezer!")
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -88,7 +99,7 @@ while running:
 
     all_sprites.draw(screen)
     pygame.display.flip()
-    clock.tick(60) #60 FPS setting 
+    clock.tick(60)  # 60 FPS setting
 
 pygame.quit()
 sys.exit()
